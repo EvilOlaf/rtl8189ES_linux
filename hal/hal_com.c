@@ -18,6 +18,7 @@
 #include "hal_com_h2c.h"
 
 #include "hal_data.h"
+#include <linux/string.h>
 
 #ifdef RTW_HALMAC
 #include "../../hal/hal_halmac.h"
@@ -13149,7 +13150,11 @@ ParseQualifiedString(
 		return _FALSE;
 
 	j = (*Start) - 2;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0))
+	strscpy_pad((char *)Out, (const char *)(In + i), j - i + 1);
+#else
 	strncpy((char *)Out, (const char *)(In + i), j - i + 1);
+#endif
 
 	return _TRUE;
 }
