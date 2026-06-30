@@ -24,6 +24,38 @@
 	#include <linux/atalk.h>
 	#include <linux/udp.h>
 	#include <linux/if_pppox.h>
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0)
+/*
+ * Starting with kernel 7.1, the pppoe_hdr->tag and pppoe_tag->tag_data members
+ * are no longer exposed to kernel code. Define local versions to maintain compatibility.
+ */
+#define pppoe_hdr	rtw_pppoe_hdr
+#define pppoe_tag	rtw_pppoe_tag
+
+struct rtw_pppoe_tag {
+	__be16 tag_type;
+	__be16 tag_len;
+	char tag_data[];
+} __attribute__((packed));
+
+struct rtw_pppoe_hdr {
+#if defined(__LITTLE_ENDIAN_BITFIELD)
+	__u8 type : 4;
+	__u8 ver : 4;
+#elif defined(__BIG_ENDIAN_BITFIELD)
+	__u8 ver : 4;
+	__u8 type : 4;
+#else
+	#error	"Please fix <asm/byteorder.h>"
+#endif
+	__u8 code;
+	__be16 sid;
+	__be16 length;
+	struct rtw_pppoe_tag tag[];
+} __packed;
+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(7, 1, 0) */
+
 #endif
 
 #if 1	/* rtw_wifi_driver */
