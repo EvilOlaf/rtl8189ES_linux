@@ -14,6 +14,7 @@
  *****************************************************************************/
 
 #include <drv_types.h>
+#include <linux/string.h>
 
 #ifdef CONFIG_IOCTL_CFG80211
 
@@ -1381,8 +1382,8 @@ static int rtw_cfgvendor_logger_start_logging(struct wiphy *wiphy,
 		type = nla_type(iter);
 		switch (type) {
 			case LOGGER_ATTRIBUTE_RING_NAME:
-				strncpy(ring_name, nla_data(iter),
-					MIN(sizeof(ring_name) -1, nla_len(iter)));
+				strscpy_pad(ring_name, nla_data(iter),
+					sizeof(ring_name));
 				break;
 			case LOGGER_ATTRIBUTE_LOG_LEVEL:
 				log_level = nla_get_u32(iter);
@@ -1510,8 +1511,8 @@ static int rtw_cfgvendor_logger_get_ring_data(struct wiphy *wiphy,
 		type = nla_type(iter);
 		switch (type) {
 			case LOGGER_ATTRIBUTE_RING_NAME:
-				strncpy(ring_name, nla_data(iter),
-					MIN(sizeof(ring_name) -1, nla_len(iter)));
+				strscpy_pad(ring_name, nla_data(iter),
+					sizeof(ring_name));
 				RTW_INFO(" %s LOGGER_ATTRIBUTE_RING_NAME : %s\n", __func__, ring_name);
 				break;
 			default:

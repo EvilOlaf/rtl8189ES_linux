@@ -16,6 +16,7 @@
 
 #include <drv_types.h>
 #include <hal_data.h>
+#include <linux/string.h>
 
 #define PG_TXPWR_1PATH_BYTE_NUM_2G 18
 #define PG_TXPWR_BASE_BYTE_NUM_2G 11
@@ -4926,9 +4927,9 @@ PHY_ConfigRFWithTxPwrTrackParaFile(
 				if (strlen(szLine) < 10 || szLine[0] != '[')
 					continue;
 
-				strncpy(band, szLine + 1, 2);
-				strncpy(path, szLine + 5, 1);
-				strncpy(sign, szLine + 8, 1);
+				strscpy_pad(band, szLine + 1, 2);
+				strscpy_pad(path, szLine + 5, 1);
+				strscpy_pad(sign, szLine + 8, 1);
 
 				i = 10; /* szLine+10 */
 				if (!ParseQualifiedString(szLine, &i, rate, '[', ']')) {

@@ -16,6 +16,7 @@
 
 #include <drv_types.h>
 #include <hal_data.h>
+#include <linux/string.h>
 
 #ifdef CONFIG_IOCTL_CFG80211
 
@@ -1750,7 +1751,7 @@ static int cfg80211_rtw_add_key(struct wiphy *wiphy,
 		goto addkey_end;
 	}
 
-	strncpy((char *)param->u.crypt.alg, alg_name, IEEE_CRYPT_ALG_NAME_LEN);
+	strscpy_pad((char *)param->u.crypt.alg, alg_name, IEEE_CRYPT_ALG_NAME_LEN);
 
 
 	if (!mac_addr || is_broadcast_ether_addr(mac_addr)
@@ -4645,8 +4646,7 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
 	}
 
 	mon_ndev->type = ARPHRD_IEEE80211_RADIOTAP;
-	strncpy(mon_ndev->name, name, IFNAMSIZ);
-	mon_ndev->name[IFNAMSIZ - 1] = 0;
+	strscpy_pad(mon_ndev->name, name, IFNAMSIZ);
 #if (LINUX_VERSION_CODE > KERNEL_VERSION(4, 11, 8))
 	mon_ndev->priv_destructor = rtw_ndev_destructor;
 #else
@@ -6689,7 +6689,11 @@ static s32 cfg80211_rtw_remain_on_channel(struct wiphy *wiphy,
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 8, 0))
 	enum nl80211_channel_type channel_type,
 #endif
-	unsigned int duration, u64 *cookie)
+	unsigned int duration, u64 *cookie
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0))
+	, const u8 *rx_addr
+#endif
+	)
 {
 	s32 err = 0;
 	u8 remain_ch = (u8) ieee80211_frequency_to_channel(channel->center_freq);

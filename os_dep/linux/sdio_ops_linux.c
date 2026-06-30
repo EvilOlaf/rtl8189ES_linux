@@ -15,6 +15,7 @@
 #define _SDIO_OPS_LINUX_C_
 
 #include <drv_types.h>
+#include <linux/string.h>
 
 inline bool rtw_is_sdio30(_adapter *adapter)
 {

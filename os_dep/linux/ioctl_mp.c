@@ -22,6 +22,7 @@
 #if defined(CONFIG_RTL8723B)
 	#include <rtw_bt_mp.h>
 #endif
+#include <linux/string.h>
 
 #define RTW_IWD_MAX_LEN	128
 inline u8 rtw_do_mp_iwdata_len_chk(const char *caller, u32 len)

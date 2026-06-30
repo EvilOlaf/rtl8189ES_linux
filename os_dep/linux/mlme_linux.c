@@ -17,6 +17,7 @@
 #define _MLME_OSDEP_C_
 
 #include <drv_types.h>
+#include <linux/string.h>
 
 
 #ifdef RTK_DMP_PLATFORM

@@ -16,6 +16,7 @@
 
 #include <drv_types.h>
 #include <hal_data.h>
+#include <linux/string.h>
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
@@ -1602,8 +1603,7 @@ int rtw_ndev_init(struct net_device *dev)
 
 	RTW_PRINT(FUNC_ADPT_FMT" if%d mac_addr="MAC_FMT"\n"
 		, FUNC_ADPT_ARG(adapter), (adapter->iface_id + 1), MAC_ARG(dev->dev_addr));
-	strncpy(adapter->old_ifname, dev->name, IFNAMSIZ);
-	adapter->old_ifname[IFNAMSIZ - 1] = '\0';
+	strscpy_pad(adapter->old_ifname, dev->name, IFNAMSIZ);
 	rtw_adapter_proc_init(dev);
 
 	return 0;

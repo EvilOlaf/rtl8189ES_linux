@@ -16,6 +16,7 @@
 
 #include <drv_types.h>
 #include "hal_com_h2c.h"
+#include <linux/string.h>
 
 #include "hal_data.h"
 
@@ -12957,7 +12958,7 @@ ParseQualifiedString(
 		return _FALSE;
 
 	j = (*Start) - 2;
-	strncpy((char *)Out, (const char *)(In + i), j - i + 1);
+	strscpy_pad((char *)Out, (const char *)(In + i), j - i + 2);
 
 	return _TRUE;
 }
