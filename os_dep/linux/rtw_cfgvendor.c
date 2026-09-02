@@ -1384,7 +1384,7 @@ static int rtw_cfgvendor_logger_start_logging(struct wiphy *wiphy,
 			case LOGGER_ATTRIBUTE_RING_NAME:
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0))
 				strscpy_pad(ring_name, nla_data(iter),
-					MIN(sizeof(ring_name), nla_len(iter)));
+					MIN(sizeof(ring_name), (size_t)nla_len(iter) + 1));
 #else
 				strncpy(ring_name, nla_data(iter),
 					MIN(sizeof(ring_name) -1, nla_len(iter)));
@@ -1519,7 +1519,7 @@ static int rtw_cfgvendor_logger_get_ring_data(struct wiphy *wiphy,
 			case LOGGER_ATTRIBUTE_RING_NAME:
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 3, 0))
 				strscpy_pad(ring_name, nla_data(iter),
-					MIN(sizeof(ring_name), nla_len(iter)));
+					MIN(sizeof(ring_name), (size_t)nla_len(iter) + 1));
 #else
 				strncpy(ring_name, nla_data(iter),
 					MIN(sizeof(ring_name) -1, nla_len(iter)));
