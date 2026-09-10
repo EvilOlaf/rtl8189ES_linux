@@ -2415,8 +2415,7 @@ Efuse_PgPacketWrite(PADAPTER	pAdapter,
 }
 
 
-int
-static Efuse_PgPacketWrite_BT(PADAPTER	pAdapter,
+static int Efuse_PgPacketWrite_BT(PADAPTER	pAdapter,
 			u8			offset,
 			u8			word_en,
 			u8			*data,
