@@ -2410,7 +2410,7 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 
 			i = 0;
 			while (i < 256) {
-				sprintf(data, "%s%x ", data, (psdbuf[i]));
+				sprintf(data + strlen(data), "%x ", (psdbuf[i]));
 				i++;
 			}
 
@@ -2425,7 +2425,7 @@ u32 mp_query_psd(PADAPTER pAdapter, u8 *data)
 		else
 			psd_data = rtw_GetPSDData(pAdapter, i);
 
-		sprintf(data, "%s%x ", data, psd_data);
+		sprintf(data + strlen(data), "%x ", psd_data);
 		i++;
 	}
 
