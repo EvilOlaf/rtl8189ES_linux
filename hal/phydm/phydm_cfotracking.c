@@ -165,22 +165,6 @@ static void phydm_set_atc_status(void *dm_void, boolean atc_status)
 	cfo_track->is_atc_status = atc_status;
 }
 
-static boolean
-phydm_get_atc_status(void *dm_void)
-{
-	boolean atc_status = false;
-	struct dm_struct *dm = (struct dm_struct *)dm_void;
-	u32 reg_tmp = 0;
-	u32 mask_tmp = 0;
-
-	reg_tmp = ODM_REG(BB_ATC, dm);
-	mask_tmp = ODM_BIT(BB_ATC, dm);
-
-	atc_status = (boolean)odm_get_bb_reg(dm, reg_tmp, mask_tmp);
-
-	PHYDM_DBG(dm, DBG_CFO_TRK, "[%s]atc_status=%d\n", __func__, atc_status);
-	return atc_status;
-}
 #endif
 
 void phydm_get_cfo_info(void *dm_void, struct phydm_cfo_rpt *cfo)

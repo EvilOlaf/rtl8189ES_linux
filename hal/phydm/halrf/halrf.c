@@ -2832,39 +2832,6 @@ halrf_config_rfk_with_header_file(void *dm_void, u32 config_type)
 	return result;
 }
 
-static void halrf_txgapk_trigger(void *dm_void)
-{
-	struct dm_struct *dm = (struct dm_struct *)dm_void;
-	struct _hal_rf_ *rf = &dm->rf_table;
-
-	u64 start_time;
-
-	start_time = odm_get_current_time(dm);
-
-	switch (dm->support_ic_type) {
-#if (DM_ODM_SUPPORT_TYPE & (ODM_IOT))
-#if (RTL8195B_SUPPORT == 1)
-	case ODM_RTL8195B:
-		phy_txgap_calibrate_8195b(dm, false);
-	break;
-#endif
-#if (RTL8721D_SUPPORT == 1)
-	case ODM_RTL8721D:
-		phy_txgap_calibrate_8721d(dm, false);
-	break;
-#endif
-
-#endif
-
-	default:
-		break;
-	}
-	rf->dpk_progressing_time =
-		odm_get_progressing_time(dm_void, start_time);
-	RF_DBG(dm, DBG_RF_TXGAPK, "[TGGC]TXGAPK progressing_time = %lld ms\n",
-	       rf->dpk_progressing_time);
-}
-
 void halrf_tssi_get_efuse(void *dm_void)
 {
 	struct dm_struct *dm = (struct dm_struct *)dm_void;
