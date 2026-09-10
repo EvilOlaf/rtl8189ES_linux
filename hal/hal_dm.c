@@ -174,7 +174,7 @@ void rtw_hal_update_param_init_fw_offload_cap(_adapter *adapter)
 }
 #endif
 
-void record_ra_info(void *p_dm_void, u8 macid, struct cmn_sta_info *p_sta, u64 ra_mask)
+static void record_ra_info(void *p_dm_void, u8 macid, struct cmn_sta_info *p_sta, u64 ra_mask)
 {
 	struct dm_struct *p_dm = (struct dm_struct *)p_dm_void;
 	_adapter *adapter = p_dm->adapter;
