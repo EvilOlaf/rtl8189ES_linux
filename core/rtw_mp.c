@@ -1174,19 +1174,6 @@ int SetTxPower(PADAPTER pAdapter)
 	return _TRUE;
 }
 
-static void SetTxAGCOffset(PADAPTER pAdapter, u32 ulTxAGCOffset)
-{
-	u32 TxAGCOffset_B, TxAGCOffset_C, TxAGCOffset_D, tmpAGC;
-
-	TxAGCOffset_B = (ulTxAGCOffset & 0x000000ff);
-	TxAGCOffset_C = ((ulTxAGCOffset & 0x0000ff00) >> 8);
-	TxAGCOffset_D = ((ulTxAGCOffset & 0x00ff0000) >> 16);
-
-	tmpAGC = (TxAGCOffset_D << 8 | TxAGCOffset_C << 4 | TxAGCOffset_B);
-	write_bbreg(pAdapter, rFPGA0_TxGainStage,
-		    (bXBTxAGC | bXCTxAGC | bXDTxAGC), tmpAGC);
-}
-
 void SetDataRate(PADAPTER pAdapter)
 {
 	hal_mpt_SetDataRate(pAdapter);

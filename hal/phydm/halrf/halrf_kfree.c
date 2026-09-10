@@ -565,22 +565,6 @@ static void phydm_set_kfree_to_rf_8710b(void *dm_void, u8 e_rf_path, u8 data)
 			      BIT(15) | BIT(14))), e_rf_path);
 }
 
-static void phydm_clear_kfree_to_rf_8710b(void *dm_void, u8 e_rf_path, u8 data)
-{
-	struct dm_struct *dm = (struct dm_struct *)dm_void;
-	u32 gain_bmask = (BIT(18) | BIT(17) | BIT(16) | BIT(15) | BIT(14));
-
-	odm_set_rf_reg(dm, e_rf_path, RF_0x55, BIT(19), (data & BIT(0)));
-	odm_set_rf_reg(dm, e_rf_path, RF_0x55, gain_bmask,
-		       ((data & 0x1f) >> 1));
-
-	RF_DBG(dm, DBG_RF_MP,
-	       "[kfree] 8710b clear power trim 0x55[19:14]=0x%X path=%d\n",
-	       odm_get_rf_reg(dm, e_rf_path, RF_0x55,
-			      (BIT(19) | BIT(18) | BIT(17) | BIT(16) |
-			      BIT(15) | BIT(14))), e_rf_path);
-}
-
 static void phydm_get_thermal_trim_offset_8192f(void *dm_void)
 {
 	struct dm_struct *dm = (struct dm_struct *)dm_void;
@@ -2057,43 +2041,6 @@ static void phydm_get_set_power_trim_offset_8721d(void *dm_void)
 	}
 }
 
-static void phydm_get_set_pa_bias_offset_8721d(void *dm_void)
-{
-	struct dm_struct *dm = (struct dm_struct *)dm_void;
-	struct odm_power_trim_data *power_trim_info = &dm->power_trim_data;
-
-	u8 pg_pa_bias = 0xff;
-#if 0
-	RF_DBG(dm, DBG_RF_MP, "======>%s\n", __func__);
-
-	odm_efuse_one_byte_read(dm, PPG_PABIAS_2GA_95B, &pg_pa_bias, false);
-
-	if (pg_pa_bias != 0xff) {
-		/*2G*/
-		odm_efuse_one_byte_read(dm, PPG_PABIAS_2GA_95B,
-					&pg_pa_bias, false);
-		pg_pa_bias = pg_pa_bias & 0xf;
-
-		RF_DBG(dm, DBG_RF_MP, "[kfree] 2G pa_bias=0x%x\n", pg_pa_bias);
-
-		odm_set_rf_reg(dm, RF_PATH_A, 0x60, 0x0000f000, pg_pa_bias);
-
-		/*5G*/
-		odm_efuse_one_byte_read(dm, PPG_PABIAS_5GA_95B,
-					&pg_pa_bias, false);
-		pg_pa_bias = pg_pa_bias & 0xf;
-
-		RF_DBG(dm, DBG_RF_MP, "[kfree] 5G pa_bias=0x%x\n", pg_pa_bias);
-
-		odm_set_rf_reg(dm, RF_PATH_A, 0x60, 0x000f0000, pg_pa_bias);
-
-		power_trim_info->pa_bias_flag |= PA_BIAS_FLAG_ON;
-	} else {
-		RF_DBG(dm, DBG_RF_MP, "[kfree] 8721d tx pa bias no pg\n");
-	}
-#endif
-}
-
 static void phydm_get_thermal_trim_offset_8197g(void *dm_void)
 {
 	struct dm_struct *dm = (struct dm_struct *)dm_void;
@@ -2223,35 +2170,6 @@ static void phydm_get_set_pa_bias_offset_8197g(void *dm_void)
 		power_trim_info->pa_bias_flag |= PA_BIAS_FLAG_ON;
 	} else {
 		RF_DBG(dm, DBG_RF_MP, "[kfree] 8197g tx pa bias no pg\n");
-	}
-}
-
-static void phydm_get_set_lna_offset_8197g(void *dm_void)
-{
-	struct dm_struct *dm = (struct dm_struct *)dm_void;
-	struct odm_power_trim_data *power_trim_info = &dm->power_trim_data;
-
-	u8 pg_lna[2] = {0}, i, pg_lna_tmp = 0;
-	u32 rf_reg;
-
-	odm_efuse_one_byte_read(dm, PPG_LNA_2GA_97G, &pg_lna_tmp, false);
-
-	if (pg_lna_tmp != 0) {
-		odm_efuse_one_byte_read(dm, PPG_LNA_2GA_97G,
-					&pg_lna[0], false);
-
-		odm_efuse_one_byte_read(dm, PPG_LNA_2GB_97G,
-					&pg_lna[1], false);
-
-		for (i = RF_PATH_A; i < 2; i++) {
-			RF_DBG(dm, DBG_RF_MP,
-				"[kfree] 8197g lna\n");
-			odm_set_rf_reg(dm, i, 0x88, 0x00000f00, pg_lna[i]);	
-		}
-
-		power_trim_info->lna_flag |= LNA_FLAG_ON;
-	} else {
-		RF_DBG(dm, DBG_RF_MP, "[kfree] 8197g lna no pg\n");
 	}
 }
 

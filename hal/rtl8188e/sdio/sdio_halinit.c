@@ -818,13 +818,6 @@ static void _InitInterrupt(PADAPTER padapter)
 
 }
 
-static void _InitRDGSetting(PADAPTER padapter)
-{
-	rtw_write8(padapter, REG_RD_CTRL, 0xFF);
-	rtw_write16(padapter, REG_RD_NAV_NXT, 0x200);
-	rtw_write8(padapter, REG_RD_RESP_PKT_TH, 0x05);
-}
-
 static void _InitRFType(PADAPTER padapter)
 {
 	struct registry_priv *pregpriv = &padapter->registrypriv;

@@ -326,6 +326,10 @@ void phydm_config_cck_tx_path(void *dm_void, enum bb_path path)
 #endif
 }
 
+#if (RTL8822B_SUPPORT || RTL8197F_SUPPORT ||\
+RTL8192F_SUPPORT || RTL8822C_SUPPORT ||\
+RTL8814B_SUPPORT || RTL8812F_SUPPORT ||\
+RTL8197G_SUPPORT)
 static void phydm_config_trx_path_v2(void *dm_void, char input[][16], u32 *_used,
 			      char *output, u32 *_out_len)
 {
@@ -390,7 +394,9 @@ static void phydm_config_trx_path_v2(void *dm_void, char input[][16], u32 *_used
 	}
 #endif
 }
+#endif
 
+#if (RTL8192E_SUPPORT || RTL8812A_SUPPORT)
 static void phydm_config_trx_path_v1(void *dm_void, char input[][16], u32 *_used,
 			      char *output, u32 *_out_len)
 {
@@ -464,6 +470,7 @@ static void phydm_config_trx_path_v1(void *dm_void, char input[][16], u32 *_used
 	*_out_len = out_len;
 #endif
 }
+#endif
 
 void phydm_config_trx_path(void *dm_void, char input[][16], u32 *_used,
 			   char *output, u32 *_out_len)

@@ -195,82 +195,6 @@ static void phydm_dig_damping_chk(void *dm_void)
 }
 #endif
 
-static boolean
-phydm_dig_go_up_check(void *dm_void)
-{
-	struct dm_struct *dm = (struct dm_struct *)dm_void;
-	struct ccx_info *ccx_info = &dm->dm_ccx_info;
-	struct phydm_dig_struct *dig_t = &dm->dm_dig_table;
-	u8 cur_ig_value = dig_t->cur_ig_value;
-	u8 max_cover_bond = 0;
-	u8 rx_gain_range_max = dig_t->rx_gain_range_max;
-	u8 i = 0, j = 0;
-	u8 total_nhm_cnt = ccx_info->nhm_rpt_sum;
-	u32 dig_cnt = 0;
-	u32 over_dig_cnt = 0;
-	boolean ret = true;
-
-	if (*dm->bb_op_mode == PHYDM_PERFORMANCE_MODE)
-		return ret;
-
-	max_cover_bond = DIG_MAX_BALANCE_MODE - dig_t->upcheck_init_val;
-
-	if (cur_ig_value < max_cover_bond - 6)
-		dig_t->go_up_chk_lv = DIG_GOUPCHECK_LEVEL_0;
-	else if (cur_ig_value <= DIG_MAX_BALANCE_MODE)
-		dig_t->go_up_chk_lv = DIG_GOUPCHECK_LEVEL_1;
-	else /* @cur_ig_value > DM_DIG_MAX_AP, foolproof */
-		dig_t->go_up_chk_lv = DIG_GOUPCHECK_LEVEL_2;
-
-	PHYDM_DBG(dm, DBG_DIG, "check_lv = %d, max_cover_bond = 0x%x\n",
-		  dig_t->go_up_chk_lv, max_cover_bond);
-
-	if (total_nhm_cnt == 0)
-		return true;
-
-	if (dig_t->go_up_chk_lv == DIG_GOUPCHECK_LEVEL_0) {
-		for (i = 3; i <= 11; i++)
-			dig_cnt += ccx_info->nhm_result[i];
-
-		if ((dig_t->lv0_ratio_reciprocal * dig_cnt) >= total_nhm_cnt)
-			ret = true;
-		else
-			ret = false;
-
-	} else if (dig_t->go_up_chk_lv == DIG_GOUPCHECK_LEVEL_1) {
-		/* search index */
-		for (i = 0; i <= 10; i++) {
-			if ((max_cover_bond * 2) == ccx_info->nhm_th[i]) {
-				for (j = (i + 1); j <= 11; j++)
-					over_dig_cnt += ccx_info->nhm_result[j];
-				break;
-			}
-		}
-
-		if (dig_t->lv1_ratio_reciprocal * over_dig_cnt < total_nhm_cnt)
-			ret = true;
-		else
-			ret = false;
-
-		if (!ret) {
-			/* update dig_t->rx_gain_range_max */
-			if (rx_gain_range_max + 6 >= max_cover_bond)
-				dig_t->rx_gain_range_max =  max_cover_bond - 6;
-			else
-				dig_t->rx_gain_range_max =  rx_gain_range_max;
-
-			PHYDM_DBG(dm, DBG_DIG,
-				  "Noise pwr over DIG can filter, lock rx_gain_range_max to 0x%x\n",
-				  dig_t->rx_gain_range_max);
-		}
-	} else if (dig_t->go_up_chk_lv == DIG_GOUPCHECK_LEVEL_2) {
-		/* @cur_ig_value > DM_DIG_MAX_AP, foolproof */
-		ret = true;
-	}
-
-	return ret;
-}
-
 static void phydm_fa_threshold_check(void *dm_void, boolean is_dfs_band)
 {
 	struct dm_struct *dm = (struct dm_struct *)dm_void;
@@ -310,6 +234,7 @@ static void phydm_fa_threshold_check(void *dm_void, boolean is_dfs_band)
 		  dig_t->fa_th[1], dig_t->fa_th[2]);
 }
 
+#if (RTL8822B_SUPPORT || RTL8197F_SUPPORT || RTL8192F_SUPPORT)
 static void phydm_set_big_jump_step(void *dm_void, u8 curr_igi)
 {
 #if (RTL8822B_SUPPORT || RTL8197F_SUPPORT || RTL8192F_SUPPORT)
@@ -340,6 +265,7 @@ static void phydm_set_big_jump_step(void *dm_void, u8 curr_igi)
 		  dig_t->big_jump_step1, big_jump_lmt);
 #endif
 }
+#endif
 
 #ifdef PHYDM_IC_JGR3_SERIES_SUPPORT
 void phydm_write_dig_reg_jgr3(void *dm_void, u8 igi)

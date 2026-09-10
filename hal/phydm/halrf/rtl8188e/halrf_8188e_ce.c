@@ -861,56 +861,6 @@ static void _phy_path_a_fill_iqk_matrix(struct dm_struct *dm, boolean is_iqk_ok,
 	}
 }
 
-static void _phy_path_b_fill_iqk_matrix(struct dm_struct *dm, boolean is_iqk_ok,
-				 s32 result[][8], u8 final_candidate,
-				 boolean is_tx_only /* do Tx only */)
-{
-	u32 oldval_1, X, TX1_A, reg;
-	s32 Y, TX1_C;
-
-	RF_DBG(dm, DBG_RF_IQK, "path B IQ Calibration %s !\n",
-	       (is_iqk_ok) ? "Success" : "Failed");
-
-	if (final_candidate == 0xFF)
-		return;
-
-	else if (is_iqk_ok) {
-		oldval_1 = (odm_get_bb_reg(dm, REG_OFDM_0_XB_TX_IQ_IMBALANCE, MASKDWORD) >> 22) & 0x3FF;
-
-		X = result[final_candidate][4];
-		if ((X & 0x00000200) != 0)
-			X = X | 0xFFFFFC00;
-		TX1_A = (X * oldval_1) >> 8;
-		RF_DBG(dm, DBG_RF_IQK, "X = 0x%x, TX1_A = 0x%x\n", X, TX1_A);
-		odm_set_bb_reg(dm, REG_OFDM_0_XB_TX_IQ_IMBALANCE, 0x3FF, TX1_A);
-
-		odm_set_bb_reg(dm, REG_OFDM_0_ECCA_THRESHOLD, BIT(27), ((X * oldval_1 >> 7) & 0x1));
-
-		Y = result[final_candidate][5];
-		if ((Y & 0x00000200) != 0)
-			Y = Y | 0xFFFFFC00;
-
-		TX1_C = (Y * oldval_1) >> 8;
-		RF_DBG(dm, DBG_RF_IQK, "Y = 0x%x, TX1_C = 0x%x\n", Y, TX1_C);
-		odm_set_bb_reg(dm, REG_OFDM_0_XD_TX_AFE, 0xF0000000, ((TX1_C & 0x3C0) >> 6));
-		odm_set_bb_reg(dm, REG_OFDM_0_XB_TX_IQ_IMBALANCE, 0x003F0000, (TX1_C & 0x3F));
-
-		odm_set_bb_reg(dm, REG_OFDM_0_ECCA_THRESHOLD, BIT(25), ((Y * oldval_1 >> 7) & 0x1));
-
-		if (is_tx_only)
-			return;
-
-		reg = result[final_candidate][6];
-		odm_set_bb_reg(dm, REG_OFDM_0_XB_RX_IQ_IMBALANCE, 0x3FF, reg);
-
-		reg = result[final_candidate][7] & 0x3F;
-		odm_set_bb_reg(dm, REG_OFDM_0_XB_RX_IQ_IMBALANCE, 0xFC00, reg);
-
-		reg = (result[final_candidate][7] >> 6) & 0xF;
-		odm_set_bb_reg(dm, REG_OFDM_0_AGC_RSSI_TABLE, 0x0000F000, reg);
-	}
-}
-
 void _phy_save_adda_registers(struct dm_struct *dm, u32 *adda_reg,
 			      u32 *adda_backup, u32 register_num)
 {

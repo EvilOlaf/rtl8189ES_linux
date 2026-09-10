@@ -1584,53 +1584,6 @@ u8 phydm_rssi_lv_dec(void *dm_void, u32 rssi, u8 ratr_state)
 	return new_rssi_lv;
 }
 
-static enum phydm_qam_order phydm_get_ofdm_qam_order(void *dm_void, u8 rate_idx)
-{
-	u8 tmp_idx = rate_idx;
-	enum phydm_qam_order qam_order = PHYDM_QAM_BPSK;
-	enum phydm_qam_order qam[10] = {PHYDM_QAM_BPSK, PHYDM_QAM_QPSK,
-					PHYDM_QAM_QPSK, PHYDM_QAM_16QAM,
-					PHYDM_QAM_16QAM, PHYDM_QAM_64QAM,
-					PHYDM_QAM_64QAM, PHYDM_QAM_64QAM,
-					PHYDM_QAM_256QAM, PHYDM_QAM_256QAM};
-
-	if (rate_idx <= ODM_RATE11M)
-		return PHYDM_QAM_CCK;
-
-	if (rate_idx >= ODM_RATEVHTSS1MCS0) {
-		if (rate_idx >= ODM_RATEVHTSS4MCS0)
-			tmp_idx -= ODM_RATEVHTSS4MCS0;
-		else if (rate_idx >= ODM_RATEVHTSS3MCS0)
-			tmp_idx -= ODM_RATEVHTSS3MCS0;
-		else if (rate_idx >= ODM_RATEVHTSS2MCS0)
-			tmp_idx -= ODM_RATEVHTSS2MCS0;
-		else
-			tmp_idx -= ODM_RATEVHTSS1MCS0;
-
-		qam_order = qam[tmp_idx];
-	} else if (rate_idx >= ODM_RATEMCS0) {
-		if (rate_idx >= ODM_RATEMCS24)
-			tmp_idx -= ODM_RATEMCS24;
-		else if (rate_idx >= ODM_RATEMCS16)
-			tmp_idx -= ODM_RATEMCS16;
-		else if (rate_idx >= ODM_RATEMCS8)
-			tmp_idx -= ODM_RATEMCS8;
-		else
-			tmp_idx -= ODM_RATEMCS0;
-
-		qam_order = qam[tmp_idx];
-	} else {
-		if (rate_idx > ODM_RATE6M) {
-			tmp_idx -= ODM_RATE6M;
-			qam_order = qam[tmp_idx - 1];
-		} else {
-			qam_order = PHYDM_QAM_BPSK;
-		}
-	}
-
-	return qam_order;
-}
-
 u8 phydm_rate_order_compute(void *dm_void, u8 rate_idx)
 {
 	u8 rate_order = rate_idx & 0x7f;

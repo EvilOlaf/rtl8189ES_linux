@@ -2728,28 +2728,6 @@ static s32 _LLTWrite(PADAPTER padapter, u32 address, u32 data)
 	return status;
 }
 
-static u8 _LLTRead(PADAPTER padapter, u32 address)
-{
-	s32	count = POLLING_LLT_THRESHOLD;
-	u32	value = _LLT_INIT_ADDR(address) | _LLT_OP(_LLT_READ_ACCESS);
-	u16	LLTReg = REG_LLT_INIT;
-
-
-	rtw_write32(padapter, LLTReg, value);
-
-	/* polling and get value */
-	do {
-		value = rtw_read32(padapter, LLTReg);
-		if (_LLT_NO_ACTIVE == _LLT_OP_VALUE(value))
-			return (u8)value;
-	} while (--count);
-
-
-
-
-	return 0xFF;
-}
-
 s32 InitLLTTable(PADAPTER padapter, u8 txpktbuf_bndy)
 {
 	s32	status = _FAIL;

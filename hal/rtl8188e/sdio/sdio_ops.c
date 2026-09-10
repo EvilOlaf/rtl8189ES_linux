@@ -154,6 +154,7 @@ static u32 _cvrt2ftaddr(const u32 addr, u8 *pdeviceId, u16 *poffset)
 	return ftaddr;
 }
 
+#if defined(CONFIG_LPS_LCLK) && defined(CONFIG_EXT_CLK)
 static u8 _sdio_read8(PADAPTER padapter, u32 addr)
 {
 	struct intf_hdl *pintfhdl;
@@ -172,6 +173,7 @@ static u8 _sdio_read8(PADAPTER padapter, u32 addr)
 
 	return val;
 }
+#endif
 
 static u8 sdio_read8(struct intf_hdl *pintfhdl, u32 addr)
 {
@@ -928,35 +930,6 @@ u8 SdioLocalCmd52Read1Byte(PADAPTER padapter, u32 addr)
 	return val;
 }
 
-static u16 SdioLocalCmd52Read2Byte(PADAPTER padapter, u32 addr)
-{
-	struct intf_hdl *pintfhdl;
-	u16 val = 0;
-
-	pintfhdl = &padapter->iopriv.intf;
-	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
-	sd_cmd52_read(pintfhdl, addr, 2, (u8 *)&val);
-
-	val = le16_to_cpu(val);
-
-	return val;
-}
-
-static u32 SdioLocalCmd52Read4Byte(PADAPTER padapter, u32 addr)
-{
-	struct intf_hdl *pintfhdl;
-	u32 val = 0;
-
-
-	pintfhdl = &padapter->iopriv.intf;
-	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
-	sd_cmd52_read(pintfhdl, addr, 4, (u8 *)&val);
-
-	val = le32_to_cpu(val);
-
-	return val;
-}
-
 static u32 SdioLocalCmd53Read4Byte(PADAPTER padapter, u32 addr)
 {
 	struct intf_hdl *pintfhdl;
@@ -986,26 +959,6 @@ void SdioLocalCmd52Write1Byte(PADAPTER padapter, u32 addr, u8 v)
 	pintfhdl = &padapter->iopriv.intf;
 	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
 	sd_cmd52_write(pintfhdl, addr, 1, &v);
-}
-
-static void SdioLocalCmd52Write2Byte(PADAPTER padapter, u32 addr, u16 v)
-{
-	struct intf_hdl *pintfhdl;
-
-	pintfhdl = &padapter->iopriv.intf;
-	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
-	v = cpu_to_le16(v);
-	sd_cmd52_write(pintfhdl, addr, 2, (u8 *)&v);
-}
-
-static void SdioLocalCmd52Write4Byte(PADAPTER padapter, u32 addr, u32 v)
-{
-	struct intf_hdl *pintfhdl;
-
-	pintfhdl = &padapter->iopriv.intf;
-	HalSdioGetCmdAddr8723ASdio(padapter, SDIO_LOCAL_DEVICE_ID, addr, &addr);
-	v = cpu_to_le32(v);
-	sd_cmd52_write(pintfhdl, addr, 4, (u8 *)&v);
 }
 
 #if 0
@@ -1159,15 +1112,6 @@ void InitInterrupt8188ESdio(PADAPTER padapter)
  *
  *	Created by Roger, 2011.02.11.
  *   */
-static void ClearInterrupt8723ASdio(PADAPTER padapter)
-{
-	u32 tmp = 0;
-	tmp = SdioLocalCmd52Read4Byte(padapter, SDIO_REG_HISR);
-	SdioLocalCmd52Write4Byte(padapter, SDIO_REG_HISR, tmp);
-	/*	padapter->IsrContent.IntArray[0] = 0; */
-	padapter->IsrContent = 0;
-}
-
 /*
  *	Description:
  *		Enalbe SDIO Host Interrupt Mask configuration on SDIO local domain.

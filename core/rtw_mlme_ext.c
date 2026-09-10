@@ -3129,6 +3129,7 @@ unsigned int OnAtim(_adapter *padapter, union recv_frame *precv_frame)
 	return _SUCCESS;
 }
 
+#ifdef CONFIG_SPCT_CH_SWITCH
 static unsigned int on_action_spct_ch_switch(_adapter *padapter, struct sta_info *psta, u8 *ies, uint ies_len)
 {
 	unsigned int ret = _FAIL;
@@ -3185,6 +3186,7 @@ static unsigned int on_action_spct_ch_switch(_adapter *padapter, struct sta_info
 exit:
 	return ret;
 }
+#endif
 
 unsigned int on_action_spct(_adapter *padapter, union recv_frame *precv_frame)
 {
@@ -12532,6 +12534,7 @@ When station does not receive any packet in MAX_CONTINUAL_NORXPACKET_COUNT*2 sec
 recipient station will teardown the block ack by issuing DELBA frame.
 
 *********************************************************************/
+#ifdef CONFIG_ISSUE_DELBA_WHEN_NO_TRAFFIC
 static void rtw_delba_check(_adapter *padapter, struct sta_info *psta, u8 from_timer)
 {
 	int	i = 0;
@@ -12569,6 +12572,7 @@ static void rtw_delba_check(_adapter *padapter, struct sta_info *psta, u8 from_t
 		}
 	}
 }
+#endif
 
 static u8 chk_ap_is_alive(_adapter *padapter, struct sta_info *psta)
 {
