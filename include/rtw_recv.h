@@ -765,36 +765,6 @@ __inline static union recv_frame *rxmem_to_recvframe(u8 *rxmem)
 
 }
 
-__inline static union recv_frame *pkt_to_recvframe(_pkt *pkt)
-{
-
-	u8 *buf_star;
-	union recv_frame *precv_frame;
-	precv_frame = rxmem_to_recvframe((unsigned char *)buf_star);
-
-	return precv_frame;
-}
-
-__inline static u8 *pkt_to_recvmem(_pkt *pkt)
-{
-	/* return the rx_head */
-
-	union recv_frame *precv_frame = pkt_to_recvframe(pkt);
-
-	return	precv_frame->u.hdr.rx_head;
-
-}
-
-__inline static u8 *pkt_to_recvdata(_pkt *pkt)
-{
-	/* return the rx_data */
-
-	union recv_frame *precv_frame = pkt_to_recvframe(pkt);
-
-	return	precv_frame->u.hdr.rx_data;
-
-}
-
 
 __inline static sint get_recvframe_len(union recv_frame *precvframe)
 {
